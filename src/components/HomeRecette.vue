@@ -15,7 +15,7 @@
           v-model="frenchWordInput"
           id="frenchWordInput"
           name="frenchWordInput"
-          class="border-sm pa-6 text-center bg-white"
+          class="border-sm pa-6 text-center bg-white text-lowercase"
           type="text"
         />
         <br />
@@ -28,7 +28,7 @@
           v-model="englishWordInput"
           id="englishWordInput"
           name="englishWordInput"
-          class="border-sm pa-6 text-center bg-white"
+          class="border-sm pa-6 text-center bg-white text-lowercase"
           type="text"
         />
         <v-btn
