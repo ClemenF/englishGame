@@ -1,8 +1,9 @@
 <template>
   <v-row
-    class="ma-md-16 flex-column"
-    v-if="this.currentTrans"
+    class="ma-12 flex-column"
+    v-show="loaded"
   >
+    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>
     <v-form ref="form" id="form-translation">
       <div class="d-flex flex-column">
         <label
@@ -50,22 +51,10 @@
       </div>
     </v-form>
   </v-row>
-  <v-row
-    v-else
-  >
-    <v-btn
-      class="mt-4"
-      color="warning"
-      block
-      @click="newWord"
-    >
-      Demarrer
-    </v-btn>
-  </v-row>
 </template>
 
 <script setup>
-  import Papa from "papaparse";
+  import axios from "axios";
 </script>
 
 <script>
@@ -74,42 +63,58 @@ export default {
     return {
       dialog: [],
       show: [],
-      dictionnary: null,
+      dictionnary: [],
       currentTrans: null,
       frenchWordInput: '',
       englishWordInput: '',
-      originLanguage: null
+      originLanguage: null,
+      spreadsheetId: '1yel8v6senTa0V_1gdLKhe3DrrEXJNClzBJnui2_VdM4',
+      token: 'AIzaSyC9y2WeQpUkzWazP_99VHFIlNA6GbwZa_c',
+      sheetName: 'Translation',
+      loaded: false,
+      alertText: '',
+      alertType: ''
+    }
+  },
+  watch: {
+    loaded: function (val) {      
+      if (val) {
+        this.createEnterListner();
+      }
     }
   },
   async mounted() {
     console.log('before import');
-    await this.importData();
+    var url = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/${this.sheetName}?key=${this.token}`;
+    let data = await axios.get(url)
+      .then(function (response) {
+        let values = response.data.values;
+        values.shift();
+        return values;
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    data.forEach(element => {
+      const t = {
+        'french': element[0],
+        'english': element[1]
+      };
+      this.dictionnary.push(t);
+    });
+    this.loaded = true;
+    console.log(this.dictionnary);
     console.log('after import');
     this.chooseATranslation();
-    this.createEnterListner();
   },
   methods: {
-    async importData() {
-      await new Promise((resolve) => {
-        Papa.parse("../src/data.csv", {
-          download: true,
-          header: true,
-          encoding: "UTF-8",
-          complete: function (results) {
-            this.dictionnary = results.data;
-            console.log('dictionnary init');
-            resolve("done");
-          }.bind(this)
-        });
-      });    
-    },
     chooseATranslation() {
+      console.log('choose', this.dictionnary.length);
+      
       const randomIndex = Math.floor(Math.random() * this.dictionnary.length);
       this.currentTrans = this.dictionnary[randomIndex];
       this.dictionnary.splice(randomIndex, 1);
       this.originLanguage = this.chooseOriginLanguage();
-      console.log(this.originLanguage);
-      console.log(this.currentTrans.english);
       let elementFrenchInput = document.getElementById('frenchWordInput');
       let elementEnglishInput = document.getElementById('englishWordInput');
 
@@ -118,6 +123,8 @@ export default {
         this.englishWordInput = '';
         elementFrenchInput.value = this.currentTrans.french;
         elementFrenchInput.disabled = true;
+        elementFrenchInput.classList.add('bg-grey');
+        elementEnglishInput.classList.remove('bg-grey');
         elementEnglishInput.disabled = false;
         elementEnglishInput.value = '';
         elementEnglishInput.focus();
@@ -125,6 +132,8 @@ export default {
         this.englishWordInput = this.currentTrans.english;
         this.frenchWordInput = '';
         elementFrenchInput.value = '';
+        elementFrenchInput.classList.remove('bg-grey');
+        elementEnglishInput.classList.add('bg-grey');
         elementEnglishInput.value = this.currentTrans.english;
         elementEnglishInput.disabled = true;
         elementFrenchInput.disabled = false;
@@ -137,25 +146,29 @@ export default {
       return arr[num];
     },
     validate () {
-      console.log('english : ', this.englishWordInput);
-      console.log('french : ', this.frenchWordInput);
       if (this.originLanguage == 'french') {
         if (this.englishWordInput === this.currentTrans.english) {
-          alert('correct');
+          this.alertText = 'Correct';
+          this.alertType = 'success';
+        } else {
+          this.alertText = 'Pas Correct - ' + this.currentTrans.english;
+          this.alertType = 'error';
         }
       } else if (this.originLanguage == 'english') {
         if (this.frenchWordInput === this.currentTrans.french) {
-          alert('correct');
+          this.alertText = 'Correct';
+          this.alertType = 'success';
+        } else {
+          this.alertText = 'Pas Correct - ' + this.currentTrans.french;
+          this.alertType = 'error';
         }
       }
       this.chooseATranslation();
     },
     newWord() {
       this.chooseATranslation();
-      this.createEnterListner();
     },
     createEnterListner() {
-      console.log('create');
       self = this;
       document.getElementById('frenchWordInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
