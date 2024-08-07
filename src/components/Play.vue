@@ -5,6 +5,11 @@
   >
 <!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
+      <v-row
+        v-if="this.currentTrans"
+        class="ma-5 flex-column text-center font-weight-bold text-uppercase">
+        <p>{{ this.currentTrans.category }}</p>
+      </v-row>
       <div class="d-flex flex-column">
         <label
           for="frenchWordInput"
@@ -74,6 +79,12 @@
       </v-timeline-item>
     </v-timeline>
   </v-row>
+  <v-row
+    class="ma-12 flex-column"
+    v-if="!loaded"
+  >
+    <v-skeleton-loader type="card"></v-skeleton-loader>
+  </v-row>
 </template>
 
 <script setup>
@@ -124,7 +135,8 @@ export default {
     data.forEach(element => {
       const t = {
         'french': element[0].toLowerCase(),
-        'english': element[1].toLowerCase()
+        'english': element[1].toLowerCase(),
+        'category': element[2]
       };
       this.dictionnary.push(t);
     });
