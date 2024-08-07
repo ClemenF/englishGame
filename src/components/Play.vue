@@ -3,7 +3,7 @@
     class="ma-12 flex-column"
     v-show="loaded"
   >
-    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>
+<!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
       <div class="d-flex flex-column">
         <label
@@ -51,6 +51,29 @@
       </div>
     </v-form>
   </v-row>
+  <v-row
+    class="ma-12 flex-column">
+    <v-timeline align="start" side="end">
+      <v-timeline-item
+        v-for="answer in answers"
+        :key="answer.id"
+        :dot-color="answer.color"
+        size="small"
+      >
+        <template v-slot:opposite>
+          {{ answer.translation }}
+        </template>
+        <div class="d-flex">
+          <div>
+            <strong>{{ answer.translationCible }}</strong>
+            <div class="text-caption">
+              {{ answer.translationAnswered }}
+            </div>
+          </div>
+        </div>
+      </v-timeline-item>
+    </v-timeline>
+  </v-row>
 </template>
 
 <script setup>
@@ -73,11 +96,14 @@ export default {
       sheetName: 'Translation',
       loaded: false,
       alertText: '',
-      alertType: ''
+      alertType: '',
+      correctAnswer: 0,
+      totalAnswer: 0,
+      answers: []
     }
   },
   watch: {
-    loaded: function (val) {      
+    loaded: function (val) {
       if (val) {
         this.createEnterListner();
       }
@@ -97,8 +123,8 @@ export default {
       });
     data.forEach(element => {
       const t = {
-        'french': element[0],
-        'english': element[1]
+        'french': element[0].toLowerCase(),
+        'english': element[1].toLowerCase()
       };
       this.dictionnary.push(t);
     });
@@ -110,9 +136,10 @@ export default {
   methods: {
     chooseATranslation() {
       console.log('choose', this.dictionnary.length);
-      
+
       const randomIndex = Math.floor(Math.random() * this.dictionnary.length);
       this.currentTrans = this.dictionnary[randomIndex];
+      console.log(this.currentTrans);
       this.dictionnary.splice(randomIndex, 1);
       this.originLanguage = this.chooseOriginLanguage();
       let elementFrenchInput = document.getElementById('frenchWordInput');
@@ -147,22 +174,53 @@ export default {
     },
     validate () {
       if (this.originLanguage == 'french') {
-        if (this.englishWordInput === this.currentTrans.english) {
+        if (this.englishWordInput.toLowerCase() === this.currentTrans.english) {
+          this.answers.unshift({
+            color: "rgba(0,128,0,0.5)",
+            id: this.answers.length + 1,
+            translation: this.currentTrans.french,
+            translationCible: this.currentTrans.english,
+            translationAnswered: this.englishWordInput.toLowerCase()
+          });
           this.alertText = 'Correct';
           this.alertType = 'success';
+          this.correctAnswer++;
         } else {
+          this.answers.unshift({
+            id: this.answers.length + 1,
+            color: "#ff0000",
+            translation: this.currentTrans.french,
+            translationCible: this.currentTrans.english,
+            translationAnswered: this.englishWordInput.toLowerCase()
+          });
           this.alertText = 'Pas Correct - ' + this.currentTrans.english;
           this.alertType = 'error';
         }
       } else if (this.originLanguage == 'english') {
-        if (this.frenchWordInput === this.currentTrans.french) {
+        if (this.frenchWordInput.toLowerCase() === this.currentTrans.french) {
+          this.answers.unshift({
+            color: "rgba(0,128,0,0.5)",
+            id: this.answers.length + 1,
+            translation: this.currentTrans.english,
+            translationCible: this.currentTrans.french,
+            translationAnswered: this.frenchWordInput.toLowerCase()
+          });
           this.alertText = 'Correct';
           this.alertType = 'success';
+          this.correctAnswer++;
         } else {
-          this.alertText = 'Pas Correct - ' + this.currentTrans.french;
+          this.answers.unshift({
+            id: this.answers.length + 1,
+            color: "#ff0000",
+            translation: this.currentTrans.english,
+            translationCible: this.currentTrans.french,
+            translationAnswered: this.frenchWordInput.toLowerCase()
+          });
+          this.alertText = 'Pas Correct - ' + this.currentTrans.english;
           this.alertType = 'error';
         }
       }
+      this.totalAnswer++;
       this.chooseATranslation();
     },
     newWord() {
