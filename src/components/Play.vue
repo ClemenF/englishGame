@@ -6,9 +6,9 @@
 <!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
       <v-row
-        v-if="this.currentTrans"
+        v-if="currentTrans"
         class="ma-5 flex-column text-center font-weight-bold text-uppercase">
-        <p>{{ this.currentTrans.category }}</p>
+        <p>{{ currentTrans.category }}</p>
       </v-row>
       <div class="d-flex flex-column">
         <label
@@ -78,12 +78,6 @@
         </div>
       </v-timeline-item>
     </v-timeline>
-  </v-row>
-  <v-row
-    class="ma-12 flex-column"
-    v-if="!loaded"
-  >
-    <v-skeleton-loader type="card"></v-skeleton-loader>
   </v-row>
 </template>
 
