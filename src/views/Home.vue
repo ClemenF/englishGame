@@ -1,7 +1,14 @@
 <template>
-  <v-col
-  class="mx-auto">
-    <v-card>
+  <v-row
+    justify="center"
+    align="center"
+    class="fill-height flex-column"
+  >
+    <v-card
+      class="ma-5"
+      @click.native="goTo('random')"
+      link
+    >
       <v-card-item>
         <v-card-title
           class="text-center">
@@ -13,7 +20,11 @@
         </v-card-text>
       </v-card-item>
     </v-card>
-    <v-card>
+    <v-card
+      class="ma-5"
+      @click.native="goTo('french')"
+      link
+    >
       <v-card-item>
         <v-card-title
           class="text-center">
@@ -21,11 +32,15 @@
         </v-card-title>
 
         <v-card-text>
-          Le mot sera demandé en français.
+          Le mot est donné en français.
         </v-card-text>
       </v-card-item>
     </v-card>
-    <v-card>
+    <v-card
+      class="ma-5"
+      @click.native="goTo('english')"
+      link
+    >
       <v-card-item>
         <v-card-title
           class="text-center">
@@ -33,11 +48,11 @@
         </v-card-title>
 
         <v-card-text>
-          Le mot sera demandé en anglais.
+          Le mot est donné en anglais.
         </v-card-text>
       </v-card-item>
     </v-card>
-  </v-col>
+  </v-row>
 </template>
 
 <script setup>
@@ -48,6 +63,21 @@ export default {
   data () {
     return {
       test: 'test'
+    }
+  },
+  methods: {
+    goTo (path) {
+      switch (path) {
+        case 'random':
+          this.$router.push({ path: '/play', query: { mode: 'random'}});
+          break;
+        case 'french':
+          this.$router.push({ path: '/play', query: { mode: 'french' }});
+          break;
+        case 'english':
+          this.$router.push({ path: '/play', query: { mode: 'english' }});
+          break;
+      }
     }
   }
 }
