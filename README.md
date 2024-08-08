@@ -67,3 +67,4 @@ bun run lint
 ### Customize configuration
 
 See [Configuration Reference](https://vitejs.dev/config/).
+URL : https://master.d1owj5uvlokqde.amplifyapp.com/
