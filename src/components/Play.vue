@@ -42,8 +42,9 @@
           type="text"
         />
         <v-btn
+          id="btn-validate"
           class="mt-4"
-          color="success"
+          :color="btncolor"
           block
           @click="validate"
         >
@@ -121,7 +122,8 @@ export default {
       correctAnswer: 0,
       totalAnswer: 0,
       answers: [],
-      mode: 'random'
+      mode: 'random',
+      btncolor: 'blue'
     }
   },
   watch: {
@@ -220,6 +222,7 @@ export default {
           this.alertText = 'Correct';
           this.alertType = 'success';
           this.correctAnswer++;
+          this.btncolor = 'success';
         } else {
           this.answers.unshift({
             id: this.answers.length + 1,
@@ -230,6 +233,7 @@ export default {
           });
           this.alertText = 'Pas Correct - ' + this.currentTrans.english;
           this.alertType = 'error';
+          this.btncolor = 'error';
         }
       } else if (this.originLanguage == 'english') {
         if (this.frenchWordInput.toLowerCase() === this.currentTrans.french) {
@@ -243,6 +247,7 @@ export default {
           this.alertText = 'Correct';
           this.alertType = 'success';
           this.correctAnswer++;
+          this.btncolor = 'success';
         } else {
           this.answers.unshift({
             id: this.answers.length + 1,
@@ -253,6 +258,7 @@ export default {
           });
           this.alertText = 'Pas Correct - ' + this.currentTrans.english;
           this.alertType = 'error';
+          this.btncolor = 'error';
         }
       }
       this.totalAnswer++;
