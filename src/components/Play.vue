@@ -3,6 +3,11 @@
     class="ma-12 flex-column"
     v-show="loaded"
   >
+    <v-btn
+       icon="mdi-arrow-left"
+      @click="goToHome"
+    >
+    </v-btn>
 <!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
       <v-row
@@ -44,20 +49,31 @@
         >
           Valider
         </v-btn>
-
-        <v-btn
-          class="mt-4"
-          color="warning"
-          block
-          @click="newWord"
-        >
-          Nouveau mot
-        </v-btn>
       </div>
     </v-form>
   </v-row>
   <v-row
-    class="ma-12 flex-column">
+    justify="center"
+    align="center"
+    class="ma-12 flex-column text-center fill-height"
+    v-if="!loaded"
+  >
+    <v-progress-circular indeterminate></v-progress-circular>
+  </v-row>
+  <v-row
+    justify="center"
+    class="ma-2">
+    <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
+    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ this.dictionnary.length }}</v-col>
+  </v-row>
+  <v-row
+    justify="center"
+    class="ma-2 border-b-sm border-t-lg">
+    <v-col cols="4" class="text-center">Mot d'origine</v-col>
+    <v-col cols="4" class="text-center">Traduction</v-col>
+  </v-row>
+  <v-row
+    class="ma-12 flex-column mt-0">
     <v-timeline align="start" side="end">
       <v-timeline-item
         v-for="answer in answers"
@@ -104,7 +120,8 @@ export default {
       alertType: '',
       correctAnswer: 0,
       totalAnswer: 0,
-      answers: []
+      answers: [],
+      mode: 'random'
     }
   },
   watch: {
@@ -116,6 +133,8 @@ export default {
   },
   async mounted() {
     console.log('before import');
+    console.log(this.$route.query);
+    this.mode = this.$route.query.mode;
     var url = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/${this.sheetName}?key=${this.token}`;
     let data = await axios.get(url)
       .then(function (response) {
@@ -147,7 +166,7 @@ export default {
       this.currentTrans = this.dictionnary[randomIndex];
       console.log(this.currentTrans);
       this.dictionnary.splice(randomIndex, 1);
-      this.originLanguage = this.chooseOriginLanguage();
+      this.chooseOriginLanguage();
       let elementFrenchInput = document.getElementById('frenchWordInput');
       let elementEnglishInput = document.getElementById('englishWordInput');
 
@@ -174,9 +193,19 @@ export default {
       }
     },
     chooseOriginLanguage() {
-      const num = Math.floor(Math.random() * 2); // generates a random number
-      const arr = ["french", "english"]; // create array of strings
-      return arr[num];
+      switch (this.mode) {
+        case 'random':
+          const num = Math.floor(Math.random() * 2); // generates a random number
+          const arr = ["french", "english"]; // create array of strings
+          this.originLanguage = arr[num];
+          break;
+        case 'french':
+          this.originLanguage = 'french';
+          break;
+        case 'english':
+          this.originLanguage = 'english';
+          break;
+      }
     },
     validate () {
       if (this.originLanguage == 'french') {
@@ -229,8 +258,8 @@ export default {
       this.totalAnswer++;
       this.chooseATranslation();
     },
-    newWord() {
-      this.chooseATranslation();
+    goToHome() {
+      this.$router.push('/');
     },
     createEnterListner() {
       self = this;
