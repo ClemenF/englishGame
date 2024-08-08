@@ -64,7 +64,7 @@
     justify="center"
     class="ma-2">
     <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
-    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ this.dictionnary.length }}</v-col>
+    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length }}</v-col>
   </v-row>
   <v-row
     justify="center"
