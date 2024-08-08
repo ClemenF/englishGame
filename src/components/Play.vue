@@ -1,13 +1,22 @@
 <template>
   <v-row
-    class="ma-12 flex-column"
-    v-show="loaded"
-  >
+    class="ma-5 flex-column">
     <v-btn
-       icon="mdi-arrow-left"
+      icon="mdi-arrow-left"
       @click="goToHome"
     >
     </v-btn>
+  </v-row>
+  <v-row
+    justify="center"
+    class="ma-2">
+    <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
+    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length }}</v-col>
+  </v-row>
+  <v-row
+    class="ma-12 flex-column mt-2"
+    v-show="loaded"
+  >
 <!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
       <v-row
@@ -60,12 +69,6 @@
     v-if="!loaded"
   >
     <v-progress-circular indeterminate></v-progress-circular>
-  </v-row>
-  <v-row
-    justify="center"
-    class="ma-2">
-    <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
-    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length }}</v-col>
   </v-row>
   <v-row
     justify="center"
