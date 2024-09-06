@@ -11,13 +11,12 @@
     justify="center"
     class="ma-2">
     <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
-    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length }}</v-col>
+    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length + 1 }}</v-col>
   </v-row>
   <v-row
     class="ma-12 flex-column mt-2"
     v-show="loaded"
   >
-<!--    <v-alert :text="alertText" :type="alertType" class="mb-10" v-if="alertType"></v-alert>-->
     <v-form ref="form" id="form-translation">
       <v-row
         v-if="currentTrans"
@@ -70,39 +69,12 @@
   >
     <v-progress-circular indeterminate></v-progress-circular>
   </v-row>
-  <v-row
-    justify="center"
-    class="ma-2 border-b-sm border-t-lg">
-    <v-col cols="4" class="text-center">Mot d'origine</v-col>
-    <v-col cols="4" class="text-center">Traduction</v-col>
-  </v-row>
-  <v-row
-    class="ma-12 flex-column mt-0">
-    <v-timeline align="start" side="end">
-      <v-timeline-item
-        v-for="answer in answers"
-        :key="answer.id"
-        :dot-color="answer.color"
-        size="small"
-      >
-        <template v-slot:opposite>
-          {{ answer.translation }}
-        </template>
-        <div class="d-flex">
-          <div>
-            <strong>{{ answer.translationCible }}</strong>
-            <div class="text-caption">
-              {{ answer.translationAnswered }}
-            </div>
-          </div>
-        </div>
-      </v-timeline-item>
-    </v-timeline>
-  </v-row>
+  <Historic/>
 </template>
 
 <script setup>
-  import axios from "axios";
+  import { mapGetters, mapMutations } from 'vuex'
+  import Historic from './Historic.vue';
 </script>
 
 <script>
@@ -116,9 +88,6 @@ export default {
       frenchWordInput: '',
       englishWordInput: '',
       originLanguage: null,
-      spreadsheetId: '1yel8v6senTa0V_1gdLKhe3DrrEXJNClzBJnui2_VdM4',
-      token: 'AIzaSyC9y2WeQpUkzWazP_99VHFIlNA6GbwZa_c',
-      sheetName: 'Translation',
       loaded: false,
       alertText: '',
       alertType: '',
@@ -136,34 +105,22 @@ export default {
       }
     }
   },
-  async mounted() {
-    console.log('before import');
-    console.log(this.$route.query);
-    this.mode = this.$route.query.mode;
-    var url = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/${this.sheetName}?key=${this.token}`;
-    let data = await axios.get(url)
-      .then(function (response) {
-        let values = response.data.values;
-        values.shift();
-        return values;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    data.forEach(element => {
-      const t = {
-        'french': element[0].toLowerCase(),
-        'english': element[1].toLowerCase(),
-        'category': element[2]
-      };
-      this.dictionnary.push(t);
-    });
-    this.loaded = true;
-    console.log(this.dictionnary);
-    console.log('after import');
+  computed: {
+    ...mapGetters([
+      'getCurrentDictionnary',
+      'getCurrentMode'
+    ])
+  },
+  mounted() {
+    this.mode = this.getCurrentMode;
+    this.dictionnary = this.getCurrentDictionnary;
     this.chooseATranslation();
+    this.loaded = true;
   },
   methods: {
+    ...mapMutations([
+      'setAnswers'
+    ]),
     chooseATranslation() {
       console.log('choose', this.dictionnary.length);
 
@@ -264,8 +221,13 @@ export default {
           this.btncolor = 'error';
         }
       }
+      this.setAnswers(this.answers);
       this.totalAnswer++;
-      this.chooseATranslation();
+      if (this.dictionnary.length > 0) {
+        this.chooseATranslation();
+      } else {
+        this.$router.push({ path: '/result', query: { result: `${this.correctAnswer} / ${this.totalAnswer}`}})
+      }
     },
     goToHome() {
       this.$router.push('/');
