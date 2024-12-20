@@ -1,5 +1,9 @@
 <template>
-  <Play />
+  <v-row justify="center">
+    <v-col sm="8" xs="12">
+      <Play />
+    </v-col>
+  </v-row>
 </template>
 
 <script setup>

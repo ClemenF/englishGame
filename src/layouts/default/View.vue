@@ -1,6 +1,10 @@
 <template>
-  <v-main class="bg-grey-lighten-3">
-    <router-view />
+  <v-main class="bg-pink-lighten-4">
+    <v-container fill-height>
+      <v-slide-x-transition mode="in-in">
+        <router-view />
+      </v-slide-x-transition>
+    </v-container>
   </v-main>
 </template>
 

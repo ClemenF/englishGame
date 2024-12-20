@@ -10,8 +10,8 @@
   <v-row
     justify="center"
     class="ma-2">
-    <v-col cols="4" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
-    <v-col cols="4" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length + 1 }}</v-col>
+    <v-col sm="4" xs="5" class="text-center font-weight-bold">Résultat : {{ correctAnswer }} / {{ totalAnswer }}</v-col>
+    <v-col sm="4" xs="5" class="text-center font-weight-bold">Mots restant : {{ dictionnary.length + 1 }}</v-col>
   </v-row>
   <v-row
     class="ma-12 flex-column mt-2"
