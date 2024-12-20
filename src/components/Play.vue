@@ -35,6 +35,7 @@
           name="frenchWordInput"
           class="border-sm pa-6 text-center bg-white text-lowercase"
           type="text"
+          spellcheck="false"
         />
         <br />
         <label
@@ -48,6 +49,7 @@
           name="englishWordInput"
           class="border-sm pa-6 text-center bg-white text-lowercase"
           type="text"
+          spellcheck="false"
         />
         <v-btn
           id="btn-validate"
