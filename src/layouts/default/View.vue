@@ -1,5 +1,5 @@
 <template>
-  <v-main class="bg-pink-lighten-4">
+  <v-main class="bg-orange-lighten-4">
     <v-container fill-height>
       <v-slide-x-transition mode="in-in">
         <router-view />

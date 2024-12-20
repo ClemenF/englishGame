@@ -28,7 +28,7 @@
   >
     <v-col sm="8" xs="12">
       <v-divider class="py-5"/>
-      <v-expansion-panels class="pa-5">
+      <v-expansion-panels class="pa-5" variant="popout">
         <v-expansion-panel>
           <v-expansion-panel-title>
             <v-icon class="mx-3">mdi-cog</v-icon>
