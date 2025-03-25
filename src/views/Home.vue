@@ -39,7 +39,9 @@
               :categories="categories"
               :maxWords="dictionnary.length"
               :countWords="dictionnaryCount"
+              :useLastWord="useOnlyLastWord"
               @countWordsUpdate="countWordsUpdated"
+              @useOnyLastWordUpdate="useOnlyLastWord = $event"
             />
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -75,7 +77,8 @@ export default {
       token: 'AIzaSyC9y2WeQpUkzWazP_99VHFIlNA6GbwZa_c',
       dictionnary: [],
       categories: [],
-      dictionnaryCount: 50
+      dictionnaryCount: 50,
+      useOnlyLastWord: false
     }
   },
   mounted() {
@@ -139,14 +142,22 @@ export default {
       let dictionnaryFill = false;
 
       while (!dictionnaryFill) {
-        const randomIndex = Math.floor(Math.random() * copyDict.length);
+        // Utiliser seulement les derniers mots revients à prendre la taille du dictionnaire
+        if (this.useOnlyLastWord) {
+          const index = copyDict.length - 1;
 
-        // Si le mot random est dans une des catégories sélectionnées.
-        // Alors l'ajouter au dictionnaire de la game.
-        if (selectedCategories.some((selectedCat) => selectedCat.name == copyDict[randomIndex].category)) {
-          dict.push(copyDict[randomIndex]);
+          dict.push(copyDict[index]);
+          copyDict.splice(index, 1);
+        } else {
+          const randomIndex = Math.floor(Math.random() * copyDict.length);
+
+          // Si le mot random est dans une des catégories sélectionnées.
+          // Alors l'ajouter au dictionnaire de la game.
+          if (selectedCategories.some((selectedCat) => selectedCat.name == copyDict[randomIndex].category)) {
+            dict.push(copyDict[randomIndex]);
+          }
+          copyDict.splice(randomIndex, 1);
         }
-        copyDict.splice(randomIndex, 1);
 
         // Si la taille du dictionnaire de la game est = à celle de la configuration
         if (dict.length >= this.dictionnaryCount) {
